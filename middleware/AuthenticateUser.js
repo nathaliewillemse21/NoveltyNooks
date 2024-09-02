@@ -1,9 +1,11 @@
+
 import { config } from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import  cors  from "cors";
 const { sign, verify } = jwt;
 config();
+
 
 async function comparePasswords(userPassword, hashedPassword) {
   return bcrypt.compare(userPassword, hashedPassword);
