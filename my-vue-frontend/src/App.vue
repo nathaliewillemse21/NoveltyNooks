@@ -1,30 +1,27 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <NavBarView />
+  <main class="container-fluid">
+    <LoadingSpinner v-if="isLoading" />
+    <router-view />
+  </main>
+  <FooterView />
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import NavBarView from './components/NavbarView.vue';
+import FooterView from './components/FooterView.vue';
+import LoadingSpinner from '@/components/SpinnerView.vue';
+export default {
+  components: {
+    NavBarView,
+    FooterView, LoadingSpinner,
+  },
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
+};
+</script>
+<style src="@/assets/css/style.css"></style>
