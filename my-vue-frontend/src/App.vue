@@ -2,7 +2,7 @@
   <NavBarView />
   <main class="container-fluid">
     <LoadingSpinner v-if="isLoading" />
-    <router-link to="/cart">View Cart ({{ cartItemCount }})</router-link>
+    <router-link to="/cart"  class="custom-grey-btn">View Cart ({{ cartItemCount }})</router-link>
 
     <router-view />
   </main>
