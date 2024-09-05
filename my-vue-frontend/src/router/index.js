@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import LoginView from '@/views/LoginView.vue';
 
 const routes = [
   {
@@ -30,7 +29,7 @@ const routes = [
   {
     path: '/checkout',
     name: 'checkout',
-    component: () => import('@/views/CheckoutView.vue'),
+    component: () => import('@/views/CheckoutView.vue'), // Ensure this path and filename are correct
     meta: { requiresAuth: true },
   },
   {
@@ -49,26 +48,16 @@ const routes = [
     name: 'contact',
     component: () => import('@/views/ContactView.vue'),
   },
+  {
+    path: '/cart',
+    name: 'cartcomp',
+    component: () => import('@/components/CartComp.vue'), // Ensure this path and filename are correct
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
-
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some((record) => record.meta.requiresAuth)) {
-//     if (!isAuthenticated()) {
-//       next({
-//         path: '/login',
-//         query: { redirect: to.fullPath },
-//       });
-//     } else {
-//       next();
-//     }
-//   } else {
-//     next();
-//   }
-// });
 
 export default router;

@@ -163,36 +163,98 @@
       },
     }
   </script>
+
   
   <style scoped>
   .container {
     display: flex;
-    justify-content: center;
-    align-content: center;
-    margin: auto;
-    padding-bottom: 5rem;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
   }
   
-  table {
-    width: 70%;
+  .input-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 0.5rem;
+    margin-right: 1rem;
+  }
+  
+  .table-responsive {
+    overflow-x: auto; /* Make table scrollable horizontally on small screens */
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .table {
+    width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    justify-content: center;
   }
   
   th,
   td {
     border: 1px solid #ddd;
-    padding: 2px;
+    padding: 0.5rem;
     text-align: center;
   }
   
   th {
     background-color: grey;
+    color: white;
   }
   
   .actions {
-    margin-top: 10px;
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  @media screen and (max-width: 600px) {
+    .input-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .search-input {
+      margin-bottom: 0.5rem;
+      margin-right: 0;
+    }
+  
+    th,
+    td {
+      font-size: 12px; /* Adjust font size for smaller screens */   
+    }
+  
+    .actions {
+      flex-direction: row;
+      justify-content: center;
+    }
   }
   </style>
   

@@ -1,43 +1,77 @@
+<!-- Cart.vue -->
 <template>
-    <div>
-     <checkout-view/>
+    <div class="cart">
+      <h2>Your Cart</h2>
+      <div v-if="cartItems.length > 0">
+        <div v-for="item in cartItems" :key="item.BookID" class="cart-item">
+          <img :src="item.Cover" alt="Product Image" />
+          <div class="cart-details">
+            <h3>{{ item.Title }}</h3>
+            <p>Price: R{{ item.Price }}</p>
+            <p>Quantity: 
+              <input type="number" v-model.number="item.quantity" min="1" @change="updateCart(item)" />
+            </p>
+            <button @click="removeFromCart(item)">Remove</button>
+          </div>
+        </div>
+        <div class="cart-total">
+          <h3>Total: R{{ cartTotal }}</h3>
+          <router-link to="/checkout" class="btn btn-primary">Proceed to Checkout</router-link>
+        </div>
+      </div>
+      <div v-else>
+        <p>Your cart is empty.</p>
+      </div>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  import CheckoutView from '@/views/CheckoutView.vue';
   export default {
-    components: { CheckoutView },
-    props: {
-      checkoutData: {
-        type: Array,
-        default: () => []
-      }
-    },
-      methods: {
-      
-      addToCart() {
-        this.$store.dispatch('addToCart', this.product);
-        },
-      clearCart() {
-        this.$store.dispatch('clearCart');
+    computed: {
+      cartItems() {
+        return this.$store.state.cart;
       },
-      async addProduct() {
-        try {
-          await axios.post('/products/addProduct');
-          console.log('Product added successfully');
-        } catch (error) {
-          console.error('Failed to add product to cart:', error);
-          throw new Error('Failed to add product to cart: ' + error.message);
-        }
-      }
-    }
+      cartTotal() {
+        return this.cartItems.reduce((total, item) => {
+          return total + item.Price * item.quantity;
+        }, 0);
+      },
+    },
+    methods: {
+      updateCart(item) {
+        this.$store.commit('updateCart', item);
+      },
+      removeFromCart(item) {
+        this.$store.commit('removeFromCart', item);
+      },
+    },
   };
   </script>
   
-  
   <style scoped>
-  /* Your component styles here */
+  .cart {
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .cart-item {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .cart-item img {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+  }
+  
+  .cart-details {
+    flex: 1;
+  }
+  
+  .cart-total {
+    text-align: right;
+    margin-top: 20px;
+  }
   </style>
   

@@ -200,7 +200,7 @@
     margin: auto;
     padding-bottom: 5rem;
   }
-  
+
   .card {
     background-color: rgb(232, 225, 225);
     border: 1px solid #ccc;

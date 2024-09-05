@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-lg sticky-top ">
+    <nav class="navbar navbar-expand-lg sticky-top">
       <div class="container">
         <button
           class="navbar-toggler"
@@ -12,7 +12,7 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse flex-grow-1" id="navbarNav">
+        <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
@@ -48,22 +48,35 @@
   </script>
   
   <style scoped>
+  .navbar {
+    background-color: darkgrey;
+  }
+  
   .navbar-nav {
-    display: flex; /* Ensure horizontal alignment */
     align-items: center; /* Center items vertically */
   }
   
-  .nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
+  .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.1); /* Light border for better visibility */
   }
   
-  .navbar {
-    background-color: darkgrey;
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,..."); /* Use custom icon if needed */
+  }
+  
+  .navbar-nav .nav-link {
+    color: #fff;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    color: #ccc;
+  }
+  
+  /* Custom styles for mobile view */
+  @media (max-width: 767.98px) {
+    .navbar-nav {
+      text-align: center; /* Center text on small screens */
+    }
   }
   </style>
   

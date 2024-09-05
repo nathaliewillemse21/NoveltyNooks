@@ -14,26 +14,30 @@
 
 .image {
   position: relative;
-  animation: moveLeftToRight;
-  animation-duration: 3s;
-  animation-iteration-count: 1;
-  animation-timing-function: moveLeftToRight infinite 3s ease-in;
+  display:flex;
+  justify-content: center;
+  align-content: center;
 }
 
-@keyframes moveLeftToRight {
-  0% {
-    left: 0px;
-    top: 0px;
-  }
-  100% {
-    left: 100px; /* Ending position */
-    top: 0px; /* Ending position */
-  }
+
+
+.image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-@media screen and (width >= 700px) {
-  .about-content {
-    overflow-y: scroll;
-    height: 30rem;
-    scroll-snap-type: y mandatory;
+
+.about-content {
+    margin-top: 1rem;
+    padding: 1rem;
+    max-height: 30rem; /* Maximum height for scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
   }
-}
+  
+  @media screen and (width <= 500px) {
+    .about-content {
+      overflow-y: scroll;
+      height: 10rem;
+      scroll-snap-type: y mandatory;
+    }
+  }

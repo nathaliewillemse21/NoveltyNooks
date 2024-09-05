@@ -34,7 +34,27 @@ export default createStore({
     CLEAR_CART(state) {
       state.cart = [];
     },
-  },
+      addToCart(state, product) {
+        const existingProduct = state.cart.find(item => item.BookID === product.BookID);
+        if (existingProduct) {
+          existingProduct.quantity += 1;
+        } else {
+          state.cart.push({ ...product, quantity: 1 });
+        }
+      },
+      updateCart(state, updatedProduct) {
+        const index = state.cart.findIndex(item => item.BookID === updatedProduct.BookID);
+        if (index !== -1) {
+          state.cart.splice(index, 1, updatedProduct);
+        }
+      },
+      removeFromCart(state, product) {
+        state.cart = state.cart.filter(item => item.BookID !== product.BookID);
+      },
+      clearCart(state) {
+        state.cart = [];
+      },
+    },
   actions: {
     async fetchUsers(context) {
       try {
@@ -161,6 +181,10 @@ export default createStore({
         console.log(e)
       }
     }
+  },
+  getters: {
+    cartItems: state => state.cart,
+    cartTotal: state => state.cart.reduce((total, item) => total + item.Price * item.quantity, 0),
   },
   modules: {},
 });
