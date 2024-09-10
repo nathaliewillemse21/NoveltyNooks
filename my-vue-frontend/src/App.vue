@@ -1,8 +1,7 @@
 <template>
   <NavBarView />
   <main class="container-fluid">
-    <LoadingSpinner v-if="isLoading" />
-    <router-link to="/cart"  class="custom-grey-btn">View Cart ({{ cartItemCount }})</router-link>
+    <LoadingSpinner v-if="isLoading" /> 
 
     <router-view />
   </main>
@@ -12,7 +11,6 @@
 import NavBarView from './components/NavbarView.vue';
 import FooterView from './components/FooterView.vue';
 import LoadingSpinner from '@/components/SpinnerView.vue';
-
 export default {
   components: {
     NavBarView,
@@ -23,11 +21,6 @@ export default {
     return {
       isLoading: false,
     };
-  },
-  computed: {
-    cartItemCount() {
-      return this.$store.state.cart.length;
-    },
   },
 };
 </script>

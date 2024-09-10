@@ -1,15 +1,15 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
 
-const render = 'https://capstoneproject-k8g5.onrender.com/';
+const apiUrl = 'https://capstoneproject-k8g5.onrender.com/';
+
 export default createStore({
-  namespaced: true,
   state: {
-    users: null,
+    users: [],
     user: null,
     cart: [],
     selectedProduct: null,
-    products: null,
+    products: [],
     product: null,
   },
   mutations: {
@@ -28,163 +28,126 @@ export default createStore({
     setSelectedProduct(state, product) {
       state.selectedProduct = product;
     },
-    ADD_TO_CART(state, product) {
-      state.cart.push(product);
+    addToCart(state, product) {
+      const existingProduct = state.cart.find(item => item.BookID === product.BookID);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        state.cart.push({ ...product, quantity: 1 });
+      }
     },
-    CLEAR_CART(state) {
+    updateCart(state, updatedProduct) {
+      const index = state.cart.findIndex(item => item.BookID === updatedProduct.BookID);
+      if (index !== -1) {
+        state.cart.splice(index, 1, updatedProduct);
+      }
+    },
+    removeFromCart(state, product) {
+      state.cart = state.cart.filter(item => item.BookID !== product.BookID);
+    },
+    clearCart(state) {
       state.cart = [];
     },
-      addToCart(state, product) {
-        const existingProduct = state.cart.find(item => item.BookID === product.BookID);
-        if (existingProduct) {
-          existingProduct.quantity += 1;
-        } else {
-          state.cart.push({ ...product, quantity: 1 });
-        }
-      },
-      updateCart(state, updatedProduct) {
-        const index = state.cart.findIndex(item => item.BookID === updatedProduct.BookID);
-        if (index !== -1) {
-          state.cart.splice(index, 1, updatedProduct);
-        }
-      },
-      removeFromCart(state, product) {
-        state.cart = state.cart.filter(item => item.BookID !== product.BookID);
-      },
-      clearCart(state) {
-        state.cart = [];
-      },
-    },
+  },
   actions: {
-    async fetchUsers(context) {
+    async fetchUsers({ commit }) {
       try {
-        const { data } = await axios.get(`${render}users`);
-        context.commit('setUsers', data.results);
+        const { data } = await axios.get(`${apiUrl}users`);
+        commit('setUsers', data.results);
       } catch (error) {
         console.error(error);
-        alert('Request Failed! Could not retrieve all users!');
+        alert('Failed to retrieve users.');
       }
     },
-    async fetchUser(context, id) {
+    async fetchUser({ commit }, id) {
       try {
-        const { data } = await axios.get(`${render}users/${id}`);
-        context.commit('setUser', data.result);
+        const { data } = await axios.get(`${apiUrl}users/${id}`);
+        commit('setUser', data.result);
       } catch (error) {
         console.error(error);
-        alert('Request Failed! Could not retrieve user!');
+        alert('Failed to retrieve user.');
       }
     },
-    async fetchProducts(context) {
+    async fetchProducts({ commit }) {
       try {
-        const { data } = await axios.get(`${render}products`);
-        context.commit('setProducts', data.results);
+        const { data } = await axios.get(`${apiUrl}products`);
+        commit('setProducts', data.results);
       } catch (error) {
         console.error(error);
-        alert('Request Failed! Could not retrieve products from the database.');
+        alert('Failed to retrieve products.');
       }
     },
-    async registerNewUser(context, newUser) {
+    async registerNewUser({ dispatch, commit }, newUser) {
       try {
-        const response = await axios.post(`${render}users/register`, newUser);
+        const response = await axios.post(`${apiUrl}users/register`, newUser);
         const { data } = response.data;
         if (data.msg) {
-          context.dispatch('fetchUsers');
-          context.commit('setUser', data.user);
-        }
-      } catch (e) {
-        alert('Request Failed: Could not register user.');
-      }
-    },
-    async updateUser(context) {
-      try {
-        const { data } = await axios.patch(`${render}users`, context.data);
-        if (data) {
-          context.commit('fetchUsers');
-          context.commit('setUser', data);
-          alert('Update Successful');
-        }
-      } catch (e) {
-        console.error(e);
-        alert(
-          'Request Failed: An error occurred while trying to update the user.'
-        );
-      }
-    },
-    async deleteUser({ commit ,dispatch},payload) {
-      try {
-        const { data } = await axios.delete(`${render}users/delete/${payload.id}`);
-        if (data) {
           dispatch('fetchUsers');
-          commit('setUser', data);
-          console.log('User deleted successfully');
-        }
-      } catch (e) {
-        console.error(e);
-        alert('Request Failed: An error occurred while deleting user.');
-      }
-    },
-    addToCart(context, product) {
-      context.commit('ADD_TO_CART', product);
-    },
-    async addProduct(context) {
-      try {
-        const response = await axios.post(`${render}addProduct`, context.data);
-        const { data } = response;
-        if (data) {
-          context.commit('fetchProducts');
-          context.commit('setProduct', data);
-        }
-      } catch (e) {
-        console.error(e.message);
-        alert('Request Failed: An error occurred while adding a new product.');
-      }
-    },
-    clearCart(context) {
-      context.commit('CLEAR_CART');
-    },
-    async updateProduct(context) {
-      try {
-        const { data } = await axios.patch(
-          `${render}/updateProduct}`,
-          context.data
-        );
-        if (data) {
-          context.commit('fetchProducts');
-          alert('Successfully updated product!');
-        } else {
-          throw new Error('Failed to update product: ');
+          commit('setUser', data.user);
         }
       } catch (error) {
-        console.error('An error occurred:', error);
-        alert('An error occurred: ' + error);
+        alert('Failed to register user.');
       }
     },
-    // async deleteProduct(context, BookID) {
-    //   try {
-    //     const { data } = await axios.delete(
-    //       `${render}products/delete/${BookID}`
-    //     );
-    //     if (data) {
-    //       context.dispatch('fetchProducts');
-    //       context.commit('setProduct');
-    //     }
-    //   } catch (e) {
-    //     alert('An error occurred while deleting the product');
-    //   }
-    // },
-    async deleteProduct({ commit, dispatch }, payload) {
+    async updateUser({ commit }, userData) {
       try {
-        await axios.delete(`${render}products/delete/${payload.id}`);
-        commit("setProducts")
-        dispatch("fetchProducts")
-      } catch (e) {
-        console.log(e)
+        const { data } = await axios.patch(`${apiUrl}users`, userData);
+        if (data) {
+          commit('fetchUsers');
+          commit('setUser', data);
+          alert('Update successful');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Failed to update user.');
       }
-    }
+    },
+    async deleteUser({ dispatch }, id) {
+      try {
+        await axios.delete(`${apiUrl}users/delete/${id}`);
+        dispatch('fetchUsers');
+        console.log('User deleted successfully');
+      } catch (error) {
+        console.error(error);
+        alert('Failed to delete user.');
+      }
+    },
+    async addProduct({ dispatch, commit }, productData) {
+      try {
+        const { data } = await axios.post(`${apiUrl}addProduct`, productData);
+        if (data) {
+          dispatch('fetchProducts');
+          commit('setProduct', data);
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Failed to add product.');
+      }
+    },
+    async updateProduct({ dispatch }, productData) {
+      try {
+        const { data } = await axios.patch(`${apiUrl}updateProduct`, productData);
+        if (data) {
+          dispatch('fetchProducts');
+          alert('Product updated successfully.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Failed to update product.');
+      }
+    },
+    async deleteProduct({ dispatch }, id) {
+      try {
+        await axios.delete(`${apiUrl}products/delete/${id}`);
+        dispatch('fetchProducts');
+      } catch (error) {
+        console.error(error);
+        alert('Failed to delete product.');
+      }
+    },
   },
   getters: {
     cartItems: state => state.cart,
     cartTotal: state => state.cart.reduce((total, item) => total + item.Price * item.quantity, 0),
   },
-  modules: {},
 });
