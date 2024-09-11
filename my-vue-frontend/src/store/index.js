@@ -35,7 +35,7 @@ export default createStore({
       } else {
         state.cart.push({ ...product, quantity: 1 });
       }
-    },
+    },    
     updateCart(state, updatedProduct) {
       const index = state.cart.findIndex(item => item.BookID === updatedProduct.BookID);
       if (index !== -1) {
@@ -112,13 +112,10 @@ export default createStore({
         alert('Failed to delete user.');
       }
     },
-    async addProduct({ dispatch, commit }, productData) {
+    async addProduct({ dispatch }, productData) {
       try {
-        const { data } = await axios.post(`${apiUrl}addProduct`, productData);
-        if (data) {
-          dispatch('fetchProducts');
-          commit('setProduct', data);
-        }
+        await axios.post(`${apiUrl}addProduct`, productData);
+        dispatch('fetchProducts'); // Fetch updated product list
       } catch (error) {
         console.error(error);
         alert('Failed to add product.');

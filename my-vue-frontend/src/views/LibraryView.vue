@@ -42,8 +42,20 @@
               </p>
               <p class="card-text">Price: R{{ product.Price }}</p>
               <div class="actions">
-                <button @click="addProductToCart(product)" class="btn btn-dark">Add to Cart</button>
-                <button @click="editProduct(product)" class="btn btn-secondary">Edit</button>
+                <div class="actions">
+  <button @click="addProductToCart(product)" class="btn btn-dark">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-check" viewBox="0 0 16 16">
+  <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
+  <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+</svg>
+  </button>
+  <button @click="editProduct(product)" class="btn btn-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+</svg> </button>
+
+</div>
+
               </div>
             </div>
           </div>
@@ -69,63 +81,55 @@
 </template>
 
   
-  <script>
-  export default {
-    data() {
-      return {
-        showModal: false,
-        showEditModal: false,  // New state for showing edit modal
-        editableProduct: null,  // New state for the product being edited
-        file: {
-          'Chinese Manhua': null,
-          'Japanese Manga': null,
-          'Korean Manhwa': null,
-        },
-        searchQuery: '',
-        selectedCategory: 'default',
-      };
+ 
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      showModal: false,
+      showEditModal: false,
+      editableProduct: null,
+      file: {
+        'Chinese Manhua': null,
+        'Japanese Manga': null,
+        'Korean Manhwa': null,
+      },
+      searchQuery: '',
+      selectedCategory: 'default',
+    };
+  },
+  computed: {
+    products() {
+      return this.$store.state.products;
     },
-    computed: {
-      users() {
-        return this.$store.state.users;
-      },
-      products() {
-        return this.$store.state.products;
-      },
-      sortedProducts() {
-        if (!this.products) {
-          return [];
-        }
-  
-        const categoryPriority = [
-          'Chinese manhua',
-          'Japanese manga',
-          'Korean manhwa',
-        ];
-  
-        return this.products.slice().sort((a, b) => {
-          const priorityA = categoryPriority.indexOf(a.Category);
-          const priorityB = categoryPriority.indexOf(b.Category);
-  
-          return priorityA - priorityB;
-        });
-      },
-      filteredProducts() {
-        if (!this.products) {
-          return [];
-        }
-  
-        return this.sortedProducts.filter((product) => {
-          const titleMatch = product.Title.toLowerCase().includes(
-            this.searchQuery.toLowerCase()
-          );
-          const categoryMatch =
-            this.selectedCategory === 'default' ||
-            product.Category === this.selectedCategory;
-          return titleMatch && categoryMatch;
-        });
-      },
-      categoryHeading() {
+    sortedProducts() {
+      const categoryPriority = [
+        'Chinese manhua',
+        'Japanese manga',
+        'Korean manhwa',
+      ];
+
+      return this.products.slice().sort((a, b) => {
+        const priorityA = categoryPriority.indexOf(a.Category);
+        const priorityB = categoryPriority.indexOf(b.Category);
+
+        return priorityA - priorityB;
+      });
+    },
+    filteredProducts() {
+      return this.sortedProducts.filter((product) => {
+        const titleMatch = product.Title.toLowerCase().includes(
+          this.searchQuery.toLowerCase()
+        );
+        const categoryMatch =
+          this.selectedCategory === 'default' ||
+          product.Category === this.selectedCategory;
+        return titleMatch && categoryMatch;
+      });
+    },
+    categoryHeading() {
       switch (this.selectedCategory) {
         case 'Chinese manhua':
           return 'Chinese Manhua';
@@ -138,112 +142,94 @@
       }
     },
   },
-    methods: {
-      showAddProductModal() {
-        this.showModal = true;
-      },
-      handleFileChange(category, event) {
-        this.file[category] = event.target.files[0];
-      },
-      selectCategory(event) {
-        this.selectedCategory = event.target.value;
-      },
-      addToCart(product) {
-        this.$store.dispatch('addToCart', product);
-      },
-      addProductToCart(product) {
-        this.$store.dispatch('addToCart', product);
-        alert('Product added successfully')
-      },
-      addProduct() {
-        const formData = new FormData();
-        for (const category in this.file) {
-          if (this.file[category]) {
-            formData.append(category, this.file[category]);
-          }
+  methods: {
+    showAddProductModal() {
+      this.showModal = true;
+    },
+    handleFileChange(category, event) {
+      this.file[category] = event.target.files[0];
+    },
+    selectCategory(event) {
+      this.selectedCategory = event.target.value;
+    },
+    addProductToCart(product) {
+      this.$store.dispatch('addToCart', product);
+      alert('Product added successfully');
+    },
+    addProduct() {
+      const formData = new FormData();
+      for (const category in this.file) {
+        if (this.file[category]) {
+          formData.append(category, this.file[category]);
         }
-        // Make an API call to add the product
-        this.$axios
-          .post('products/addProduct', formData)
-          .then((response) => {
-            console.log('Product added successfully:', response.data);
-  
-            this.$store.dispatch('fetchProducts');
-            this.showModal = false; 
-          })
-          .catch((error) => {
-            console.error('Error adding product:', error);
-          });
-      },
-      // New method for editing a product
-      editProduct(product) {
-        this.editableProduct = { ...product };
-        this.showEditModal = true;
-      },
-      // Method to update product
-      updateProduct() {
-        // Example API call to update the product
-        this.$axios
-          .put(`products/updateProduct/${this.editableProduct.BookID}`, this.editableProduct)
-          .then((response) => {
-            console.log('Product updated successfully:', response.data);
-            this.$store.dispatch('fetchProducts');
-            this.showEditModal = false;
-          })
-          .catch((error) => {
-            console.error('Error updating product:', error);
-          });
-      },
-      // Method to close edit modal
-      closeEditModal() {
-        this.showEditModal = false;
-        this.editableProduct = null;
-      },
+      }
+      // Make an API call to add the product
+      axios
+        .post('https://capstoneproject-k8g5.onrender.com/products/addProduct', formData)
+        .then((response) => {
+          console.log('Product added successfully:', response.data);
+          this.$store.dispatch('fetchProducts');
+          this.showModal = false;
+        })
+        .catch((error) => {
+          console.error('Error adding product:', error);
+        });
     },
-    mounted() {
-      this.$store.dispatch('fetchProducts');
+    editProduct(product) {
+      this.editableProduct = { ...product };
+      this.showEditModal = true;
     },
-  };
-  </script>
+    updateProduct() {
+      axios
+        .put(`https://capstoneproject-k8g5.onrender.com/products/updateProduct/${this.editableProduct.BookID}`, this.editableProduct)
+        .then((response) => {
+          console.log('Product updated successfully:', response.data);
+          this.$store.dispatch('fetchProducts');
+          this.showEditModal = false;
+        })
+        .catch((error) => {
+          console.error('Error updating product:', error);
+        });
+    },
+    closeEditModal() {
+      this.showEditModal = false;
+      this.editableProduct = null;
+    },
+  },
+  mounted() {
+    this.$store.dispatch('fetchProducts');
+  },
+};
+</script>
+
   
- <style scoped>
-
-.filter-container {
-  display: flex;
-  justify-content: space-between; /* Distribute space between the items */
-  align-items: center; /* Vertically center items */
-  margin-bottom: 1rem;
-}
-
-.search-container {
-  flex: 1; /* Allows the search container to take available space */
-}
-
-.sort-container {
-  flex: 0 0 auto; /* Allows the sort container to take only necessary space */
-  margin-left: 1rem; /* Adds some space between search input and sort select */
-}
-.category-heading {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
+<style scoped>
+/* Base Styles */
 .card {
-  background-color: rgb(232, 225, 225);
   border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 10px;
   margin: 10px;
 }
 
 .card img {
-  max-width: 100%;
-  height: auto;
+  display: block;
+  margin: 0 auto; /* Center the image horizontally */
+  max-width: 100%; /* Ensure image fits within the card */
+  height: auto; /* Maintain aspect ratio */
 }
 
 .actions {
+  display: flex;
+  justify-content: space-between;
   margin-top: 10px;
 }
+
+.btn {
+  flex: 0 0 48%; /* Ensure buttons take about 48% of the available space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} 
 
 input[type="text"],
 select {
@@ -253,7 +239,7 @@ select {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 8px;
   width: 100%;
-  max-width: 300px; /* Adjust width as needed */
+  max-width: 300px;
 }
 
 .product-content {
@@ -262,10 +248,63 @@ select {
   scroll-snap-type: y mandatory;
 }
 
-@media screen and (max-width: 500px) {
-  .product-content {
-    height: 10rem;
+/* Large Screens (Desktops) */
+@media screen and (min-width: 1024px) {
+  .card {
+    margin: 20px;
   }
 }
+
+/* Tablets */
+@media screen and (max-width: 1023px) and (min-width: 768px) {
+  .filter-container {
+    flex-direction: column; /* Stack search and sort vertically */
+  }
+
+  .search-container,
+  .sort-container {
+    margin: 0.5rem 0;
+  }
+
+  .card {
+    margin: 15px;
+  }
+
+  .btn {
+    flex: 0 0 100%; /* Stack buttons vertically */
+    margin-bottom: 10px;
+  }
+
+  .product-content {
+    height: 8rem; /* Adjust height for smaller screens */
+  }
+}
+
+/* Mobile Devices */
+@media screen and (max-width: 767px) {
+  .filter-container {
+    flex-direction: column; /* Stack search and sort vertically */
+  }
+
+  .search-container,
+  .sort-container {
+    margin: 0.5rem 0;
+  }
+
+  .card {
+    margin: 10px;
+  }
+
+  .btn {
+    flex: 0 0 100%; /* Stack buttons vertically */
+    margin-bottom: 10px;
+  }
+
+  .product-content {
+    height: 6rem; /* Adjust height for small screens */
+  }
+}
+
 </style>
+
 

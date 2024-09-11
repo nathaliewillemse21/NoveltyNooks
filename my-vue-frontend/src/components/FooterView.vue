@@ -3,7 +3,6 @@
     <footer class="footer">
       <p class="lead">Novelty Nook &copy; {{ currYear }}</p>
       <div class="icons">
-        <!-- Placeholder for social media or other icons -->
         <i
           class="icon fa fa-facebook"
           @mouseover="hoverIcon"
@@ -45,7 +44,7 @@ export default {
 
 <style scoped>
 .footer {
-  position: fixed;
+  position: relative;
   bottom: 0;
   width: 100%;
   background-color: darkgrey;
